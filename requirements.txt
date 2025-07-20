@@ -9,9 +9,9 @@ requests==2.31.0
 beautifulsoup4==4.12.2
 chromadb==0.4.22
 openai>=1.6.1,<2.0.0
-langchain-chroma==0.1.0
+langchain-chroma==0.1.2
 thefuzz
 SpeechRecognition
-pyaudio
+pydub
 streamlit-mic-recorder
 streamlit-js-eval
