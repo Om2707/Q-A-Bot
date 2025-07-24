@@ -12,6 +12,5 @@ openai>=1.6.1,<2.0.0
 langchain-chroma==0.1.2
 thefuzz
 SpeechRecognition
-pydub
 streamlit-mic-recorder
 streamlit-js-eval
