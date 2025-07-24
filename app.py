@@ -89,7 +89,7 @@ I'm always ready to help make your document analysis easier and more enjoyable!"
 
     # Creator information
     elif re.search(r'\b(who created you|who made you|who developed you)\b', question_lower):
-        return """👨‍💻 **I was created by a developer** who wanted to make PDF analysis more accessible and conversational!
+        return """👨‍💻 **I was created by a Om Sir** who wanted to make PDF analysis more accessible and conversational!
 
 I'm built using:
 - 🐍 **Python & Streamlit** for the interface
@@ -177,11 +177,44 @@ def main():
     st.title("🌸 Ira - Your PDF Q&A Assistant")
     st.markdown("*Upload a PDF and chat with me about its content, or just say hello!* 💬")
     
-    # Check if OpenAI API key is set
-    if not Config.OPENAI_API_KEY:
-        st.error("⚠️ Please set your OpenAI API key in the .env file")
-        st.code("OPENAI_API_KEY=your_api_key_here", language="bash")
+    # Hide the "Deploy" button from the Streamlit toolbar
+    st.markdown("""
+        <style>
+        .stDeployButton {
+            visibility: hidden;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+    # Check if OpenAI API key is set, prioritizing Streamlit secrets
+    openai_api_key = None
+    
+    # Manually check for secrets.toml to avoid Streamlit's FileNotFoundError message
+    secrets_paths = [
+        os.path.join(os.path.expanduser("~"), ".streamlit/secrets.toml"),
+        ".streamlit/secrets.toml"
+    ]
+    secrets_file_exists = any(os.path.exists(p) for p in secrets_paths)
+
+    if secrets_file_exists:
+        try:
+            if "OPENAI_API_KEY" in st.secrets:
+                openai_api_key = st.secrets["OPENAI_API_KEY"]
+        except Exception:
+            # If st.secrets fails for any reason, we can fall back silently
+            pass
+    
+    if not openai_api_key:
+        # Fallback to environment variable if not in secrets
+        openai_api_key = os.getenv("OPENAI_API_KEY")
+
+    if not openai_api_key:
+        st.error("⚠️ Please set your OpenAI API key.")
+        st.info("You can add it to `.streamlit/secrets.toml` for deployment or set it as an environment variable for local development.")
+        st.code("OPENAI_API_KEY = 'your_api_key_here'", language="toml")
         st.stop()
+
+    Config.OPENAI_API_KEY = openai_api_key
     
     # Initialize components
     components = initialize_components()
